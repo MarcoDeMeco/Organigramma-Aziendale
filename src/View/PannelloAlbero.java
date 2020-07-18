@@ -17,7 +17,7 @@ public class PannelloAlbero extends JPanel implements ActionListener {
     private JScrollPane scrollPane;
     private JPanel pannello;
 
-    public PannelloAlbero() {
+    public PannelloAlbero(AlberoView alberoView) {
         super(new BorderLayout());
 
         JButton addButton = new JButton("Aggiungi");
@@ -33,7 +33,7 @@ public class PannelloAlbero extends JPanel implements ActionListener {
         ruoliButton.addActionListener(this);
 
         pannello = new JPanel(new GridLayout(1, 0));
-        scrollPane = new JScrollPane(Controller.getAlberoAziendale());
+        scrollPane = new JScrollPane(alberoView);
         pannello.add(scrollPane);
         pannello.setPreferredSize(new Dimension(300, 300));
         add(pannello, BorderLayout.CENTER);
@@ -43,20 +43,6 @@ public class PannelloAlbero extends JPanel implements ActionListener {
         panel.add(removeButton);
         panel.add(ruoliButton);
         add(panel, BorderLayout.SOUTH);
-    }
-
-    public void aggiorna() {
-        remove(pannello);
-
-        pannello = new JPanel(new GridLayout(1, 0));
-        scrollPane = new JScrollPane(Controller.getAlberoAziendale());
-        pannello.add(scrollPane);
-        pannello.setPreferredSize(new Dimension(300, 300));
-        add(pannello, BorderLayout.CENTER);
-
-        // Il metodo repaint non funziona, uso questo workaround
-        setVisible(false);
-        setVisible(true);
     }
 
     @Override

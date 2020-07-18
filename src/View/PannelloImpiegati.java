@@ -91,6 +91,7 @@ public class PannelloImpiegati extends JPanel implements ActionListener {
         add(panel, BorderLayout.SOUTH);
     }
 
+
     public void aggiornaImpiegati(String nomeNodo, LinkedList<Impiegato> impiegati) {
         titolo.setText("Impiegati del nodo " + nomeNodo);
 

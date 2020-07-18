@@ -11,13 +11,7 @@ public class FinestraOrganigramma extends JFrame {
 
     // TODO chiedere di salvare prima di chiudere
 
-    public FinestraOrganigramma(){
-        PannelloAlbero pannelloAlbero = new PannelloAlbero();
-        Controller.setPannelloAlbero(pannelloAlbero);
-
-        PannelloImpiegati pannelloImpiegati = new PannelloImpiegati();
-        Controller.setPannelloImpiegati(pannelloImpiegati);
-
+    public FinestraOrganigramma(PannelloAlbero pannelloAlbero, PannelloImpiegati pannelloImpiegati){
         JMenuBar menuBar = new JMenuBar();
 
         JMenu menu = new JMenu("File");
