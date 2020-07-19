@@ -1,6 +1,7 @@
 package Model;
 
 import Controller.Controller;
+import View.Observer;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -11,115 +12,84 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class AlberoAziendale extends DefaultTreeModel {
+public class AlberoAziendale extends AbstractModel {
 
-    // <nodo, lista impiegati del nodo>
-    private HashMap<String, LinkedList<Impiegato>> impiegatiInNodo;
-
-    // <nome impiegato, impiegato corrispondente>
-    private HashMap<String, Impiegato> impiegatiByName;
-
-    // <nodo, lista ruoli nel nodo>
-    private HashMap<String, LinkedList<String>> ruoliInNodo;
-
-    private DefaultMutableTreeNode rootNode;
+    private AziendaTreeModel aziendaTreeModel;
 
     public AlberoAziendale() {
-        super(new DefaultMutableTreeNode("Azienda"));
-
-        rootNode = (DefaultMutableTreeNode) getRoot();
-
-        impiegatiInNodo = new HashMap<>();
-        impiegatiInNodo.put((String) rootNode.getUserObject(), new LinkedList<>());
-
-        impiegatiByName = new HashMap<>();
-
-        ruoliInNodo = new HashMap<>();
-        LinkedList<String> listaRuoli = new LinkedList<>();
-        listaRuoli.add("CEO");
-        listaRuoli.add("CTO");
-        listaRuoli.add("Direttore");
-        ruoliInNodo.put((String) rootNode.getUserObject(), listaRuoli);
+        aziendaTreeModel = new AziendaTreeModel();
     }
 
-    public DefaultMutableTreeNode aggiungiNodo(DefaultMutableTreeNode parent, String nomeNodo) {
-        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(nomeNodo);
-
-        if (impiegatiInNodo.containsKey((String) childNode.getUserObject())) {
-            JOptionPane.showMessageDialog(null, "Il nodo "+nomeNodo+" esiste già");
-            return null;
-        }
-
-        insertNodeInto(childNode, parent, parent.getChildCount());
-        impiegatiInNodo.put((String) childNode.getUserObject(), new LinkedList<>());
-        ruoliInNodo.put(nomeNodo, new LinkedList<>());
-        return childNode;
+    public void setAziendaTreeModel(AziendaTreeModel aziendaTreeModel) {
+        this.aziendaTreeModel = aziendaTreeModel;
+        aggiorna();
     }
 
-    public void rimuoviNodo(DefaultMutableTreeNode nodoSelezionato) {
-        for(Impiegato i : impiegatiInNodo.get((String) nodoSelezionato.getUserObject())){
-            i.rimuoviImpiego((String) nodoSelezionato.getUserObject());
-        }
-        impiegatiInNodo.remove((String) nodoSelezionato.getUserObject());
-        ruoliInNodo.remove((String) nodoSelezionato.getUserObject());
-        removeNodeFromParent(nodoSelezionato);
+    public AziendaTreeModel getAziendaTreeModel() {
+        return aziendaTreeModel;
     }
 
-    public void aggiungiImpiegato(DefaultMutableTreeNode nodoSelezionato, String nomeImpiegato, String ruolo) {
-        if (!impiegatiByName.containsKey(nomeImpiegato)) {
-            impiegatiByName.put(nomeImpiegato, new Impiegato(nomeImpiegato));
-        }
-        Impiegato impiegato = impiegatiByName.get(nomeImpiegato);
-
-        LinkedList<Impiegato> listaImpiegati = impiegatiInNodo.get((String) nodoSelezionato.getUserObject());
-
-        if (listaImpiegati.contains(impiegato)) {
-            JOptionPane.showMessageDialog(null, "L'impiegato "+nomeImpiegato+" è già presente in questo nodo");
-            return;
-        }
-
-        impiegato.aggiungiRuolo((String) nodoSelezionato.getUserObject(), ruolo);
-        listaImpiegati.add(impiegato);
+    public UnitaOrganizzativa aggiungiNodo(UnitaOrganizzativa parent, String nomeNodo) {
+        return aziendaTreeModel.aggiungiNodo(parent, nomeNodo);
     }
 
-    public LinkedList<Impiegato> getListaImpiegati(DefaultMutableTreeNode nodoSelezionato){
-        return impiegatiInNodo.get((String) nodoSelezionato.getUserObject());
+    public void rimuoviNodo(UnitaOrganizzativa nodoSelezionato) {
+        aziendaTreeModel.rimuoviNodo(nodoSelezionato);
     }
 
-    public void rimuoviImpiegato(DefaultMutableTreeNode nodoSelezionato, Impiegato impiegato) {
-        impiegato.rimuoviImpiego((String) nodoSelezionato.getUserObject());
-        if(impiegato.getRuoloByNodo().isEmpty()){
-            impiegatiByName.remove(impiegato.getNome());
-        }
-        LinkedList<Impiegato> lista = impiegatiInNodo.get((String) nodoSelezionato.getUserObject());
-        lista.remove(impiegato);
+    public HashMap<String, Impiegato> getImpiegatoByName(){
+        return aziendaTreeModel.getImpiegatiByName();
     }
 
-    public LinkedList<String> getListaRuoli(DefaultMutableTreeNode nodoSelezionato) {
-        return ruoliInNodo.get((String) nodoSelezionato.getUserObject());
-    }
+    // TODO fare questo controllo in controller
+//    public void aggiungiImpiegato(UnitaOrganizzativa nodoSelezionato, String nomeImpiegato, String ruolo) {
+//        HashMap<String, Impiegato> impiegatiByName = aziendaTreeModel.getImpiegatiByName();
+//
+//        if (!impiegatiByName.containsKey(nomeImpiegato)) {
+//            impiegatiByName.put(nomeImpiegato, new Impiegato(nomeImpiegato));
+//        }
+//        Impiegato impiegato = impiegatiByName.get(nomeImpiegato);
+//
+//        if(nodoSelezionato.getListaImpiegati().contains(impiegato)){
+//        }
+//
+//        nodoSelezionato.aggiungiImpiegato(impiegato);
+//    }
 
-    public void rimuoviRuolo(DefaultMutableTreeNode nodoSelezionato, String ruolo) {
-        LinkedList<String> lista = ruoliInNodo.get((String) nodoSelezionato.getUserObject());
 
-        LinkedList<Impiegato> impiegati = impiegatiInNodo.get((String) nodoSelezionato.getUserObject());
-        for (Impiegato i : impiegati) {
-            if (i.getRuolo((String) nodoSelezionato.getUserObject()).equals(ruolo)) {
-                JOptionPane.showMessageDialog(null, "Esiste almeno un impiegato con questo ruolo\nAssicurati che nessun impiegato abbia il ruolo in questione prima di eliminarlo");
-                return;
-            }
-        }
+    // TODO fare questo controllo in controller
+//    public void rimuoviImpiegato(DefaultMutableTreeNode nodoSelezionato, Impiegato impiegato) {
+//        impiegato.rimuoviImpiego((String) nodoSelezionato.getUserObject());
+//        if (impiegato.getRuoloByNodo().isEmpty()) {
+//            impiegatiByName.remove(impiegato.getNome());
+//        }
+//        LinkedList<Impiegato> lista = impiegatiInNodo.get((String) nodoSelezionato.getUserObject());
+//        lista.remove(impiegato);
+//    }
 
-        lista.remove(ruolo);
-    }
+    // TODO fare questo controllo in controller
+//    public void rimuoviRuolo(DefaultMutableTreeNode nodoSelezionato, String ruolo) {
+//        LinkedList<String> lista = ruoliInNodo.get((String) nodoSelezionato.getUserObject());
+//
+//        LinkedList<Impiegato> impiegati = impiegatiInNodo.get((String) nodoSelezionato.getUserObject());
+//        for (Impiegato i : impiegati) {
+//            if (i.getRuolo((String) nodoSelezionato.getUserObject()).equals(ruolo)) {
+//                JOptionPane.showMessageDialog(null, "Esiste almeno un impiegato con questo ruolo\nAssicurati che nessun impiegato abbia il ruolo in questione prima di eliminarlo");
+//                return;
+//            }
+//        }
+//
+//        lista.remove(ruolo);
+//    }
 
-    public void aggiungiRuolo(DefaultMutableTreeNode nodoSelezionato, String ruolo) {
-        LinkedList<String> lista = ruoliInNodo.get((String) nodoSelezionato.getUserObject());
-        if(lista.contains(ruolo)){
-            JOptionPane.showMessageDialog(null, "Il ruolo "+ruolo+" esiste già");
-            return;
-        }
-
-        lista.add(ruolo);
-    }
+    // TODO fare questo controllo in controller
+//    public void aggiungiRuolo(DefaultMutableTreeNode nodoSelezionato, String ruolo) {
+//        LinkedList<String> lista = ruoliInNodo.get((String) nodoSelezionato.getUserObject());
+//        if (lista.contains(ruolo)) {
+//            JOptionPane.showMessageDialog(null, "Il ruolo " + ruolo + " esiste già");
+//            return;
+//        }
+//
+//        lista.add(ruolo);
+//    }
 }

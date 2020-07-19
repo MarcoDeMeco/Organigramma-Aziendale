@@ -52,7 +52,7 @@ public class Controller {
 
     public static void gestisciRuoli() {
         LinkedList<String> lista = alberoAziendale.getListaRuoli(nodoSelezionato);
-        dialogoRuoli = new DialogoRuoli((String) nodoSelezionato.getUserObject(), lista);
+        dialogoRuoli = new DialogoRuoli(nodoSelezionato, alberoAziendale);
         dialogoRuoli.setVisible(true);
     }
 
@@ -141,7 +141,11 @@ public class Controller {
 
     public static void aggiornaDialogoRuoli(){
         LinkedList<String> lista = alberoAziendale.getListaRuoli(nodoSelezionato);
-        dialogoRuoli.aggiornaRuoli(lista);
+//        dialogoRuoli.aggiornaRuoli(lista);
+    }
+
+    public static void detachObserver(Observable observable, Observer observer){
+        observable.detach(observer);
     }
 
     // ------ INIT ------

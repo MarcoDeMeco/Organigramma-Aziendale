@@ -1,9 +1,11 @@
 package Model;
 
+import View.Observer;
+
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class Impiegato implements Serializable {
+public class Impiegato extends AbstractModel implements Serializable {
     private String nome;
 
     // <nodo, ruolo>
@@ -30,12 +32,12 @@ public class Impiegato implements Serializable {
         ruoloByNodo.remove(nodo);
     }
 
+    public boolean isDisoccupato(){
+        return ruoloByNodo.isEmpty();
+    }
+
     public HashMap<String, String> getRuoloByNodo() {
         return ruoloByNodo;
     }
 
-    @Override
-    public String toString() {
-        return nome;
-    }
 }

@@ -1,12 +1,13 @@
 package View;
 
 import Controller.Controller;
-import Model.Impiegato;
+import Model.AlberoAziendale;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,13 +16,18 @@ import java.awt.event.MouseListener;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class DialogoRuoli extends JDialog {
+public class DialogoRuoli extends JDialog implements Observer {
 
     private MyTableModel tableModel;
     private String ruoloSelezionato;
     private JButton removeButton;
+    private AlberoAziendale alberoAziendale;
+    private DefaultMutableTreeNode nodo;
 
-    public DialogoRuoli(String nodo, LinkedList<String> listaRuoli){
+    public DialogoRuoli(DefaultMutableTreeNode nodo, AlberoAziendale alberoAziendale){
+        this.alberoAziendale = alberoAziendale;
+        this.nodo = nodo;
+
         JTextField info = new JTextField("Lista ruoli del nodo: "+nodo);
         info.setEditable(false);
         info.setHorizontalAlignment(0);
@@ -29,6 +35,8 @@ public class DialogoRuoli extends JDialog {
         tableModel = new MyTableModel();
         tableModel.addColumn("Ruolo");
         Object[] data = new Object[1];
+
+        LinkedList<String> listaRuoli = alberoAziendale.getListaRuoli(nodo);
         for (String ruolo : listaRuoli) {
             data[0] = ruolo;
             tableModel.addRow(data);
@@ -117,19 +125,25 @@ public class DialogoRuoli extends JDialog {
         pannello.add(container, BorderLayout.SOUTH);
 
         add(pannello);
-        setTitle("Ruoli del nodo "+nodo);
+        setTitle("Ruoli del nodo "+(String) nodo.getUserObject());
         setSize(300,300);
         setLocationRelativeTo(null);
         setModal(true);
     }
 
-    public void aggiornaRuoli(LinkedList<String> listaRuoli){
+//    public void aggiornaRuoli(LinkedList<String> listaRuoli){
+//
+//    }
+
+    @Override
+    public void aggiorna() {
         removeButton.setEnabled(false);
 
         for (int i = tableModel.getRowCount() - 1; i > -1; i--) {
             tableModel.removeRow(i);
         }
 
+        LinkedList<String> listaRuoli = alberoAziendale.getListaRuoli(nodo);
         Object[] data = new Object[1];
         for (String ruolo : listaRuoli) {
             data[0] = ruolo;
