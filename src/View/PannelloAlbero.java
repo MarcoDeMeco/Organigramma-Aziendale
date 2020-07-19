@@ -1,7 +1,6 @@
 package View;
 
 import Controller.Controller;
-import Model.AlberoAziendale;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +15,14 @@ public class PannelloAlbero extends JPanel implements ActionListener {
 
     private JScrollPane scrollPane;
     private JPanel pannello;
+    private AlberoView alberoView;
+    private Controller controller;
 
-    public PannelloAlbero(AlberoView alberoView) {
+    public PannelloAlbero(Controller controller, AlberoView alberoView) {
         super(new BorderLayout());
+
+        this.alberoView = alberoView;
+        this.controller = controller;
 
         JButton addButton = new JButton("Aggiungi");
         addButton.setActionCommand(AGGIUNGI);
@@ -52,13 +56,13 @@ public class PannelloAlbero extends JPanel implements ActionListener {
         if (AGGIUNGI.equals(command)) {
             String nomeNodo = JOptionPane.showInputDialog("Nome del nuovo nodo: ");
             if (nomeNodo != null && !nomeNodo.equals(""))
-                Controller.aggiungiNodo(nomeNodo);
+                controller.aggiungiNodo(alberoView.getNodoSelezionato(), nomeNodo);
 
         } else if (RIMUOVI.equals(command)) {
-            Controller.rimuoviNodoCorrente();
+            controller.rimuoviNodo(alberoView.getNodoSelezionato());
 
         } else if (RUOLI.equals(command)) {
-            Controller.gestisciRuoli();
+            new DialogoRuoli(controller, alberoView.getNodoSelezionato()).setVisible(true);
         }
     }
 }

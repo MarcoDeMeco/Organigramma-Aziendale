@@ -24,31 +24,11 @@ public class AziendaTreeModel extends DefaultTreeModel {
         rootNode.aggiungiRuolo("Direttore");
     }
 
-    public UnitaOrganizzativa aggiungiNodo(UnitaOrganizzativa parent, String nomeNodo){
-        UnitaOrganizzativa childNode = new UnitaOrganizzativa(nomeNodo);
-
-        //TODO fare questo controllo in controller
-//        if (listaNodi.contains((String) childNode.getUserObject())) {
-//            // TODO dai la responsabilità alla view di mostrare questo errore
-//            JOptionPane.showMessageDialog(null, "Il nodo " + nomeNodo + " esiste già");
-//            return null;
-//        }
-
-        insertNodeInto(childNode, parent, parent.getChildCount());
-        return childNode;
-    }
-
-    public void rimuoviNodo(UnitaOrganizzativa nodoSelezionato){
-        for(Impiegato i : nodoSelezionato.getListaImpiegati()){
-            i.rimuoviImpiego((String) nodoSelezionato.getUserObject());
-            if(i.isDisoccupato())
-                impiegatiByName.remove(i);
-        }
-        listaNodi.remove((String) nodoSelezionato.getUserObject());
-        removeNodeFromParent(nodoSelezionato);
-    }
-
     public HashMap<String, Impiegato> getImpiegatiByName() {
         return impiegatiByName;
+    }
+
+    public LinkedList<String> getListaNodi() {
+        return listaNodi;
     }
 }

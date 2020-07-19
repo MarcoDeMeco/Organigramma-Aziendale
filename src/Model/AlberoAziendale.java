@@ -1,23 +1,44 @@
 package Model;
 
-import Controller.Controller;
-import View.Observer;
-
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class AlberoAziendale extends AbstractModel {
+
+    // TODO qua ho applicato qualche pattern senza rendermene conto
 
     private AziendaTreeModel aziendaTreeModel;
 
     public AlberoAziendale() {
         aziendaTreeModel = new AziendaTreeModel();
+    }
+
+    public UnitaOrganizzativa aggiungiNodo(UnitaOrganizzativa parent, String nomeNodo) {
+        // TODO controllare il nome del nodo ""
+        if (aziendaTreeModel.getListaNodi().contains(nomeNodo)) {
+            JOptionPane.showMessageDialog(null, "Il nodo " + nomeNodo + " esiste già");
+            return null;
+        }
+        UnitaOrganizzativa childNode = new UnitaOrganizzativa(nomeNodo);
+        aziendaTreeModel.insertNodeInto(childNode, parent, parent.getChildCount());
+        return childNode;
+    }
+
+    public void rimuoviNodo(UnitaOrganizzativa nodoSelezionato) {
+        for(Impiegato i : nodoSelezionato.getListaImpiegati()){
+            i.rimuoviImpiego((String) nodoSelezionato.getUserObject());
+            if(i.isDisoccupato())
+                getImpiegatiByName().remove(i);
+        }
+        aziendaTreeModel.removeNodeFromParent(nodoSelezionato);
+        aggiorna();
+    }
+
+    public void aggiungiImpiegato(Impiegato impiegato){
+        if(getImpiegatiByName().containsKey((String) impiegato.getNome())){
+            return;
+        }
+        getImpiegatiByName().put((String) impiegato.getNome(), impiegato);
     }
 
     public void setAziendaTreeModel(AziendaTreeModel aziendaTreeModel) {
@@ -29,15 +50,7 @@ public class AlberoAziendale extends AbstractModel {
         return aziendaTreeModel;
     }
 
-    public UnitaOrganizzativa aggiungiNodo(UnitaOrganizzativa parent, String nomeNodo) {
-        return aziendaTreeModel.aggiungiNodo(parent, nomeNodo);
-    }
-
-    public void rimuoviNodo(UnitaOrganizzativa nodoSelezionato) {
-        aziendaTreeModel.rimuoviNodo(nodoSelezionato);
-    }
-
-    public HashMap<String, Impiegato> getImpiegatoByName(){
+    public HashMap<String, Impiegato> getImpiegatiByName(){
         return aziendaTreeModel.getImpiegatiByName();
     }
 

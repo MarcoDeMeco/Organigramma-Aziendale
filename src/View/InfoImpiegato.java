@@ -13,7 +13,6 @@ public class InfoImpiegato extends JDialog {
     public InfoImpiegato(Impiegato impiegato) {
         HashMap<String, String> ruoloByNodo = impiegato.getRuoloByNodo();
 
-
         MyTableModel tableModel = new MyTableModel();
         tableModel.addColumn("Nodo");
         tableModel.addColumn("Ruolo");

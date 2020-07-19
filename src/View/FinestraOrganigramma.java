@@ -1,6 +1,7 @@
 package View;
 
 import Controller.Controller;
+import Model.AlberoAziendale;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +11,9 @@ import java.awt.event.ActionListener;
 public class FinestraOrganigramma extends JFrame {
 
     // TODO chiedere di salvare prima di chiudere
+    // implementa observer per ricevere aggiornamenti di cambiamento e dal controller notifica quando salvi
 
-    public FinestraOrganigramma(PannelloAlbero pannelloAlbero, PannelloImpiegati pannelloImpiegati){
+    public FinestraOrganigramma(Controller controller, AlberoAziendale alberoAziendale){
         JMenuBar menuBar = new JMenuBar();
 
         JMenu menu = new JMenu("File");
@@ -19,7 +21,7 @@ public class FinestraOrganigramma extends JFrame {
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.salva();
+                controller.salva();
             }
         });
         menu.add(item);
@@ -27,7 +29,7 @@ public class FinestraOrganigramma extends JFrame {
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.apri();
+                controller.apri();
             }
         });
         menu.add(item);
@@ -44,9 +46,14 @@ public class FinestraOrganigramma extends JFrame {
         menu.add(item);
         menuBar.add(menu);
 
+        PannelloImpiegati pannelloImpiegati = new PannelloImpiegati(controller);
+
+        AlberoView alberoView = new AlberoView(alberoAziendale, pannelloImpiegati);
+        alberoAziendale.attach(alberoView);
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(0, 2));
-        mainPanel.add(pannelloAlbero);
+        mainPanel.add(new PannelloAlbero(controller, alberoView));
         mainPanel.add(pannelloImpiegati);
 
         setTitle("Organigramma Aziendale");

@@ -1,34 +1,64 @@
 package View;
 
 import Controller.Controller;
-import Model.AlberoAziendale;
+import Model.UnitaOrganizzativa;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.LinkedList;
-import java.util.Map;
 
 public class DialogoRuoli extends JDialog implements Observer {
 
     private MyTableModel tableModel;
     private String ruoloSelezionato;
     private JButton removeButton;
-    private AlberoAziendale alberoAziendale;
-    private DefaultMutableTreeNode nodo;
+    private UnitaOrganizzativa nodoSelezionato;
 
-    public DialogoRuoli(DefaultMutableTreeNode nodo, AlberoAziendale alberoAziendale){
-        this.alberoAziendale = alberoAziendale;
-        this.nodo = nodo;
+    public DialogoRuoli(Controller controller, UnitaOrganizzativa nodoSelezionato){
+        this.nodoSelezionato = nodoSelezionato;
+        nodoSelezionato.attach(this);
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
 
-        JTextField info = new JTextField("Lista ruoli del nodo: "+nodo);
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                nodoSelezionato.detach(DialogoRuoli.this);
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
+
+        JTextField info = new JTextField("Lista ruoli del nodo: "+nodoSelezionato);
         info.setEditable(false);
         info.setHorizontalAlignment(0);
 
@@ -36,7 +66,7 @@ public class DialogoRuoli extends JDialog implements Observer {
         tableModel.addColumn("Ruolo");
         Object[] data = new Object[1];
 
-        LinkedList<String> listaRuoli = alberoAziendale.getListaRuoli(nodo);
+        LinkedList<String> listaRuoli = nodoSelezionato.getListaRuoli();
         for (String ruolo : listaRuoli) {
             data[0] = ruolo;
             tableModel.addRow(data);
@@ -76,7 +106,7 @@ public class DialogoRuoli extends JDialog implements Observer {
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.rimuoviRuolo(ruoloSelezionato);
+                controller.rimuoviRuolo(nodoSelezionato, ruoloSelezionato);
             }
         });
         removeButton.setEnabled(false);
@@ -105,7 +135,7 @@ public class DialogoRuoli extends JDialog implements Observer {
         aggiungiButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Controller.aggiungiRuolo(input.getText());
+                controller.aggiungiRuolo(nodoSelezionato, input.getText());
                 input.setText("");
                 aggiungiButton.setEnabled(false);
             }
@@ -125,15 +155,11 @@ public class DialogoRuoli extends JDialog implements Observer {
         pannello.add(container, BorderLayout.SOUTH);
 
         add(pannello);
-        setTitle("Ruoli del nodo "+(String) nodo.getUserObject());
+        setTitle("Ruoli del nodo "+(String) nodoSelezionato.getUserObject());
         setSize(300,300);
         setLocationRelativeTo(null);
         setModal(true);
     }
-
-//    public void aggiornaRuoli(LinkedList<String> listaRuoli){
-//
-//    }
 
     @Override
     public void aggiorna() {
@@ -143,7 +169,7 @@ public class DialogoRuoli extends JDialog implements Observer {
             tableModel.removeRow(i);
         }
 
-        LinkedList<String> listaRuoli = alberoAziendale.getListaRuoli(nodo);
+        LinkedList<String> listaRuoli = nodoSelezionato.getListaRuoli();
         Object[] data = new Object[1];
         for (String ruolo : listaRuoli) {
             data[0] = ruolo;

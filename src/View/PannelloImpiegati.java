@@ -2,6 +2,7 @@ package View;
 
 import Controller.Controller;
 import Model.Impiegato;
+import Model.UnitaOrganizzativa;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -12,7 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.LinkedList;
 
-public class PannelloImpiegati extends JPanel implements ActionListener {
+public class PannelloImpiegati extends JPanel implements ActionListener, Observer {
 
     private static final String ADD_COMMAND = "aggiungi";
     private static final String REMOVE_COMMAND = "rimuovi";
@@ -24,9 +25,13 @@ public class PannelloImpiegati extends JPanel implements ActionListener {
     private Impiegato impiegatoSelezionato;
     private JButton removeButton;
     private JButton infoButton;
+    private UnitaOrganizzativa nodoSelezionato;
+    private Controller controller;
 
-    public PannelloImpiegati() {
+    public PannelloImpiegati(Controller controller) {
         super(new BorderLayout());
+
+        this.controller = controller;
 
         JButton addButton = new JButton("Aggiungi");
         addButton.setActionCommand(ADD_COMMAND);
@@ -91,8 +96,16 @@ public class PannelloImpiegati extends JPanel implements ActionListener {
         add(panel, BorderLayout.SOUTH);
     }
 
+    public void aggiornaNodoSelezionato(UnitaOrganizzativa nodoSelezionato) {
+        this.nodoSelezionato = nodoSelezionato;
+        aggiorna();
+    }
 
-    public void aggiornaImpiegati(String nomeNodo, LinkedList<Impiegato> impiegati) {
+    @Override
+    public void aggiorna() {
+        LinkedList<Impiegato> impiegati = nodoSelezionato.getListaImpiegati();
+        String nomeNodo = (String) nodoSelezionato.getUserObject();
+
         titolo.setText("Impiegati del nodo " + nomeNodo);
 
         removeButton.setEnabled(false);
@@ -110,16 +123,19 @@ public class PannelloImpiegati extends JPanel implements ActionListener {
         }
     }
 
+    // TODO controlla sta cosa che certi listener sono implementati nella classe e certi no
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
         if (ADD_COMMAND.equals(command)) {
-            Controller.aggiungiImpiegato();
-//            String nomeImpiegato = JOptionPane.showInputDialog("Nome del nuovo impiegato: ");
-//            Controller.aggiungiImpiegato(nomeImpiegato);
+            if(nodoSelezionato.getListaRuoli().isEmpty()){
+                //TODO messeggio di errore: non esiste alcun ruolo in questa unità
+                return;
+            }
+            new AggiungiImpiegato(controller, nodoSelezionato).setVisible(true);
         } else if (REMOVE_COMMAND.equals(command)) {
-            Controller.rimuoviImpiegato(impiegatoSelezionato);
+            controller.rimuoviImpiegato(nodoSelezionato, impiegatoSelezionato);
         } else if (INFO_COMMAND.equals(command)){
             new InfoImpiegato(impiegatoSelezionato).setVisible(true);
         }

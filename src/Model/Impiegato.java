@@ -5,7 +5,7 @@ import View.Observer;
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class Impiegato extends AbstractModel implements Serializable {
+public class Impiegato implements Serializable {
     private String nome;
 
     // <nodo, ruolo>

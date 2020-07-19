@@ -1,7 +1,9 @@
 package Controller;
 
 import Model.AlberoAziendale;
+import Model.AziendaTreeModel;
 import Model.Impiegato;
+import Model.UnitaOrganizzativa;
 import View.*;
 
 import javax.swing.*;
@@ -9,28 +11,26 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.*;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Controller {
-    private static AlberoAziendale alberoAziendale;
-    private static PannelloImpiegati pannelloImpiegati;
-    private static PannelloAlbero pannelloAlbero;
-    private static DialogoRuoli dialogoRuoli;
-    private static AlberoView alberoView;
-    private static DefaultMutableTreeNode nodoSelezionato;
-    private static Toolkit toolkit = Toolkit.getDefaultToolkit();
+    private AlberoAziendale alberoAziendale;
+    private FinestraOrganigramma finestra;
+    private Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     // ------ DA VIEW -------
 
-    public static void aggiungiNodo(String nomeNodo) {
-        DefaultMutableTreeNode nuovoNodo = alberoAziendale.aggiungiNodo(nodoSelezionato, nomeNodo);
-        if (nuovoNodo != null) {
-            alberoView.scrollPathToVisible(new TreePath(nuovoNodo.getPath()));
-        }
+    public UnitaOrganizzativa aggiungiNodo(UnitaOrganizzativa nodoSelezionato, String nomeNodo) {
+        return alberoAziendale.aggiungiNodo(nodoSelezionato, nomeNodo);
+        // TODO
+//        if (nuovoNodo != null) {
+//            alberoView.scrollPathToVisible(new TreePath(nuovoNodo.getPath()));
+//        }
     }
 
-    public static void rimuoviNodoCorrente() {
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) nodoSelezionato.getParent();
+    public void rimuoviNodo(UnitaOrganizzativa nodoSelezionato) {
+        UnitaOrganizzativa parent = (UnitaOrganizzativa) nodoSelezionato.getParent();
 
         if (parent == null) {
             toolkit.beep();
@@ -40,45 +40,48 @@ public class Controller {
         alberoAziendale.rimuoviNodo(nodoSelezionato);
     }
 
-    public static void aggiungiImpiegato(String nomeImpiegato, String ruolo) {
-        alberoAziendale.aggiungiImpiegato(nodoSelezionato, nomeImpiegato, ruolo);
-        aggiornaPannelloImpiegati();
-    }
+    public void aggiungiImpiegato(UnitaOrganizzativa nodoSelezionato, String nomeImpiegato, String ruolo) {
+        Impiegato nuovoImpiegato = new Impiegato(nomeImpiegato);
+        if(alberoAziendale.getImpiegatiByName().containsKey(nomeImpiegato)){
+            nuovoImpiegato = alberoAziendale.getImpiegatiByName().get(nomeImpiegato);
+        }
 
-    public static void rimuoviImpiegato(Impiegato impiegato) {
-        alberoAziendale.rimuoviImpiegato(nodoSelezionato, impiegato);
-        aggiornaPannelloImpiegati();
-    }
-
-    public static void gestisciRuoli() {
-        LinkedList<String> lista = alberoAziendale.getListaRuoli(nodoSelezionato);
-        dialogoRuoli = new DialogoRuoli(nodoSelezionato, alberoAziendale);
-        dialogoRuoli.setVisible(true);
-    }
-
-    public static void rimuoviRuolo(String ruolo) {
-        alberoAziendale.rimuoviRuolo(nodoSelezionato, ruolo);
-        aggiornaDialogoRuoli();
-    }
-
-    public static void aggiungiRuolo(String ruolo) {
-        alberoAziendale.aggiungiRuolo(nodoSelezionato, ruolo);
-        aggiornaDialogoRuoli();
-    }
-
-    public static void aggiungiImpiegato() {
-        LinkedList<String> lista = alberoAziendale.getListaRuoli(nodoSelezionato);
-        if (lista.size() == 0) {
-            JOptionPane.showMessageDialog(null, "Nessun ruolo disponibile per il nodo " + (String) nodoSelezionato.getUserObject());
+        if(nodoSelezionato.getListaImpiegati().contains(nuovoImpiegato)){
+            // TODO messaggio di errore: L'impiegato è già assunto
             return;
         }
-        new AggiungiImpiegato((String) nodoSelezionato.getUserObject(), lista).setVisible(true);
+
+        nuovoImpiegato.aggiungiRuolo((String) nodoSelezionato.getUserObject(), ruolo);
+        nodoSelezionato.aggiungiImpiegato(nuovoImpiegato);
+        alberoAziendale.aggiungiImpiegato(nuovoImpiegato);
     }
 
-    public static void salva() {
+    public void rimuoviImpiegato(UnitaOrganizzativa nodoSelezionato, Impiegato impiegato) {
+        nodoSelezionato.rimuoviImpiegato(impiegato);
+        impiegato.rimuoviImpiego((String) nodoSelezionato.getUserObject());
+    }
+
+    public void rimuoviRuolo(UnitaOrganizzativa nodoSelezionato, String ruolo) {
+        for(Impiegato i : nodoSelezionato.getListaImpiegati()){
+            if(i.getRuolo((String) nodoSelezionato.getUserObject()).equals(ruolo)){
+                // TODO messaggio di errore: c'è almeno un impiegato che ha questo ruolo
+                return;
+            }
+        }
+        nodoSelezionato.rimuoviRuolo(ruolo);
+    }
+
+    public void aggiungiRuolo(UnitaOrganizzativa nodoSelezionato, String ruolo) {
+        if(nodoSelezionato.getListaRuoli().contains(ruolo)){
+            // TODO messaggio di errore: il ruolo esiste già
+            return;
+        }
+        nodoSelezionato.aggiungiRuolo(ruolo);
+    }
+
+    public void salva() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Salva");
-        fileChooser.setApproveButtonText("Salva");
 
         int userSelection = fileChooser.showSaveDialog(null);
 
@@ -87,7 +90,7 @@ public class Controller {
 
             try {
                 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileToSave.getAbsolutePath()));
-                oos.writeObject(alberoAziendale);
+                oos.writeObject(alberoAziendale.getAziendaTreeModel());
 
             } catch (Exception e){
                 JOptionPane.showMessageDialog(null, "Errore durante la scrittura del file");
@@ -96,7 +99,7 @@ public class Controller {
         }
     }
 
-    public static void apri() {
+    public void apri() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Apri");
         fileChooser.setApproveButtonText("Apri");
@@ -108,8 +111,8 @@ public class Controller {
 
             try {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileToSave.getAbsolutePath()));
-                alberoAziendale = (AlberoAziendale) ois.readObject();
-                aggiornaAlbero();
+                AziendaTreeModel model = (AziendaTreeModel) ois.readObject();
+                alberoAziendale.setAziendaTreeModel(model);
 
             } catch (Exception e){
                 JOptionPane.showMessageDialog(null, "Errore");
@@ -118,44 +121,10 @@ public class Controller {
         }
     }
 
-    // --------------------------------
-
-    public static void setNodoSelezionato(DefaultMutableTreeNode nodoSelezionato) {
-        Controller.nodoSelezionato = nodoSelezionato;
-        if (nodoSelezionato == null) {
-            Controller.nodoSelezionato = (DefaultMutableTreeNode) alberoAziendale.getRoot();
-        }
-        aggiornaPannelloImpiegati();
-    }
-
-    public static void aggiornaAlbero() {
-        nodoSelezionato = (DefaultMutableTreeNode) alberoAziendale.getRoot();
-        alberoView.setAlberoAziendale(alberoAziendale);
-        aggiornaPannelloImpiegati();
-    }
-
-    public static void aggiornaPannelloImpiegati() {
-        LinkedList<Impiegato> lista = alberoAziendale.getListaImpiegati(nodoSelezionato);
-        pannelloImpiegati.aggiornaImpiegati((String) nodoSelezionato.getUserObject(), lista);
-    }
-
-    public static void aggiornaDialogoRuoli(){
-        LinkedList<String> lista = alberoAziendale.getListaRuoli(nodoSelezionato);
-//        dialogoRuoli.aggiornaRuoli(lista);
-    }
-
-    public static void detachObserver(Observable observable, Observer observer){
-        observable.detach(observer);
-    }
-
     // ------ INIT ------
 
-    public static void createAndShowGUI() {
+    public void createAndShowGUI() {
         alberoAziendale = new AlberoAziendale();
-        nodoSelezionato = (DefaultMutableTreeNode) alberoAziendale.getRoot();
-        alberoView = new AlberoView(alberoAziendale);
-        pannelloAlbero = new PannelloAlbero(alberoView);
-        pannelloImpiegati = new PannelloImpiegati();
-        new FinestraOrganigramma(pannelloAlbero, pannelloImpiegati).setVisible(true);
+        new FinestraOrganigramma(this, alberoAziendale).setVisible(true);
     }
 }

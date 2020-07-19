@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
-public class UnitaOrganizzativa extends AbstractModel implements MutableTreeNode {
+public class UnitaOrganizzativa extends AbstractModel implements MutableTreeNode, Serializable {
     private DefaultMutableTreeNode treeNode;
     private LinkedList<String> listaRuoli;
     private LinkedList<Impiegato> listaImpiegati;
@@ -72,6 +72,11 @@ public class UnitaOrganizzativa extends AbstractModel implements MutableTreeNode
     @Override
     public void setUserObject(Object object) {
         treeNode.setUserObject(object);
+    }
+
+    @Override
+    public String toString() {
+        return (String) getUserObject();
     }
 
     public Object getUserObject(){
