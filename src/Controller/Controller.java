@@ -26,14 +26,14 @@ public class Controller {
         finestra.setVisible(true);
     }
 
-    public void aggiungiNodo(String nomeNodo) {
+    public DefaultMutableTreeNode aggiungiNodo(String nomeNodo) {
         if (alberoAziendale.getListaNodi().contains(nomeNodo)) {
             // TODO
             JOptionPane.showMessageDialog(null, "Il nodo " + nomeNodo + " esiste già");
-            return;
+            return null;
         }
-        alberoAziendale.aggiungiNodo(nodoSelezionato, nomeNodo);
         finestra.setModificaEffettuata(true);
+        return alberoAziendale.aggiungiNodo(nodoSelezionato, nomeNodo);
     }
 
     public void rimuoviNodo() {

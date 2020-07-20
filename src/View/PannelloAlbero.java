@@ -4,6 +4,8 @@ import Controller.Controller;
 import Model.UnitaOrganizzativa;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,7 +59,9 @@ public class PannelloAlbero extends JPanel implements ActionListener {
         if (AGGIUNGI.equals(command)) {
             String nomeNodo = JOptionPane.showInputDialog("Nome del nuovo nodo: ");
             if (nomeNodo != null && !nomeNodo.equals("")) {
-                controller.aggiungiNodo(nomeNodo);
+                DefaultMutableTreeNode nuovoNodo = controller.aggiungiNodo(nomeNodo);
+                if (nuovoNodo != null)
+                    alberoView.scrollPathToVisible(new TreePath(nuovoNodo.getPath()));
             }
 
         } else if (RIMUOVI.equals(command)) {

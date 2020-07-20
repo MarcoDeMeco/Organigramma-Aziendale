@@ -11,15 +11,17 @@ public class AlberoAziendale extends AbstractModel {
         aziendaTreeModel = new AziendaTreeModel();
     }
 
-    public void aggiungiNodo(DefaultMutableTreeNode parent, String nomeNodo) {
+    public DefaultMutableTreeNode aggiungiNodo(DefaultMutableTreeNode parent, String nomeNodo) {
         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new UnitaOrganizzativa(nomeNodo));
         aziendaTreeModel.insertNodeInto(childNode, parent, parent.getChildCount());
         getListaNodi().add(nomeNodo);
-        return;
+        return childNode;
     }
 
     public void rimuoviNodo(DefaultMutableTreeNode nodoSelezionato) {
         aziendaTreeModel.removeNodeFromParent(nodoSelezionato);
+        String nomeNodo = ((UnitaOrganizzativa) nodoSelezionato.getUserObject()).toString();
+        getListaNodi().remove(nomeNodo);
         aggiorna();
     }
 
