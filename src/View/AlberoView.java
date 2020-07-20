@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -24,6 +25,14 @@ public class AlberoView extends JTree implements TreeSelectionListener, Observer
         this.controller = controller;
 
         alberoAziendale.attach(this);
+
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) getCellRenderer();
+        Icon closedIcon = new ImageIcon("open.png");
+        Icon openIcon = new ImageIcon("open.png");
+        Icon leafIcon = new ImageIcon("leaf.png");
+        renderer.setClosedIcon(closedIcon);
+        renderer.setOpenIcon(openIcon);
+        renderer.setLeafIcon(leafIcon);
 
         addTreeSelectionListener(this);
         setModel(alberoAziendale.getAziendaTreeModel());
