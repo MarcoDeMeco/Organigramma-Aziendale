@@ -40,4 +40,8 @@ public class Impiegato implements Serializable {
         return ruoloByNodo;
     }
 
+    @Override
+    public String toString() {
+        return nome;
+    }
 }

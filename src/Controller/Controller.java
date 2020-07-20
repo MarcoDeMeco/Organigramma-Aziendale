@@ -8,75 +8,93 @@ import View.*;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.io.*;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 public class Controller {
     private AlberoAziendale alberoAziendale;
     private FinestraOrganigramma finestra;
     private Toolkit toolkit = Toolkit.getDefaultToolkit();
+    private DefaultMutableTreeNode nodoSelezionato;
+    private UnitaOrganizzativa unitaSelezionata;
 
-    // ------ DA VIEW -------
-
-    public UnitaOrganizzativa aggiungiNodo(UnitaOrganizzativa nodoSelezionato, String nomeNodo) {
-        return alberoAziendale.aggiungiNodo(nodoSelezionato, nomeNodo);
-        // TODO
-//        if (nuovoNodo != null) {
-//            alberoView.scrollPathToVisible(new TreePath(nuovoNodo.getPath()));
-//        }
+    public Controller(){
+        alberoAziendale = new AlberoAziendale();
+        finestra = new FinestraOrganigramma(this, alberoAziendale);
+        // TODO controllare i setVisible
+        finestra.setVisible(true);
     }
 
-    public void rimuoviNodo(UnitaOrganizzativa nodoSelezionato) {
-        UnitaOrganizzativa parent = (UnitaOrganizzativa) nodoSelezionato.getParent();
+    public void aggiungiNodo(String nomeNodo) {
+        if (alberoAziendale.getListaNodi().contains(nomeNodo)) {
+            // TODO
+            JOptionPane.showMessageDialog(null, "Il nodo " + nomeNodo + " esiste già");
+            return;
+        }
+        alberoAziendale.aggiungiNodo(nodoSelezionato, nomeNodo);
+        finestra.setModificaEffettuata(true);
+    }
+
+    public void rimuoviNodo() {
+        TreeNode parent = nodoSelezionato.getParent();
 
         if (parent == null) {
             toolkit.beep();
             return;
         }
 
+        for(Impiegato i : unitaSelezionata.getListaImpiegati()){
+            i.rimuoviImpiego(unitaSelezionata.toString());
+            if(i.isDisoccupato())
+                alberoAziendale.getImpiegatiByName().remove(i);
+        }
+
         alberoAziendale.rimuoviNodo(nodoSelezionato);
+        finestra.setModificaEffettuata(true);
     }
 
-    public void aggiungiImpiegato(UnitaOrganizzativa nodoSelezionato, String nomeImpiegato, String ruolo) {
+    public void aggiungiImpiegato(String nomeImpiegato, String ruolo) {
         Impiegato nuovoImpiegato = new Impiegato(nomeImpiegato);
         if(alberoAziendale.getImpiegatiByName().containsKey(nomeImpiegato)){
             nuovoImpiegato = alberoAziendale.getImpiegatiByName().get(nomeImpiegato);
         }
 
-        if(nodoSelezionato.getListaImpiegati().contains(nuovoImpiegato)){
+        if(unitaSelezionata.getListaImpiegati().contains(nuovoImpiegato)){
             // TODO messaggio di errore: L'impiegato è già assunto
             return;
         }
 
-        nuovoImpiegato.aggiungiRuolo((String) nodoSelezionato.getUserObject(), ruolo);
-        nodoSelezionato.aggiungiImpiegato(nuovoImpiegato);
+        nuovoImpiegato.aggiungiRuolo(unitaSelezionata.toString(), ruolo);
+        unitaSelezionata.aggiungiImpiegato(nuovoImpiegato);
         alberoAziendale.aggiungiImpiegato(nuovoImpiegato);
+        finestra.setModificaEffettuata(true);
     }
 
-    public void rimuoviImpiegato(UnitaOrganizzativa nodoSelezionato, Impiegato impiegato) {
-        nodoSelezionato.rimuoviImpiegato(impiegato);
-        impiegato.rimuoviImpiego((String) nodoSelezionato.getUserObject());
+    public void rimuoviImpiegato(Impiegato impiegato) {
+        unitaSelezionata.rimuoviImpiegato(impiegato);
+        impiegato.rimuoviImpiego(unitaSelezionata.toString());
+        finestra.setModificaEffettuata(true);
     }
 
-    public void rimuoviRuolo(UnitaOrganizzativa nodoSelezionato, String ruolo) {
-        for(Impiegato i : nodoSelezionato.getListaImpiegati()){
-            if(i.getRuolo((String) nodoSelezionato.getUserObject()).equals(ruolo)){
+    public void rimuoviRuolo(String ruolo) {
+        for(Impiegato i : unitaSelezionata.getListaImpiegati()){
+            if(i.getRuolo(unitaSelezionata.toString()).equals(ruolo)){
                 // TODO messaggio di errore: c'è almeno un impiegato che ha questo ruolo
                 return;
             }
         }
-        nodoSelezionato.rimuoviRuolo(ruolo);
+        unitaSelezionata.rimuoviRuolo(ruolo);
+        finestra.setModificaEffettuata(true);
     }
 
-    public void aggiungiRuolo(UnitaOrganizzativa nodoSelezionato, String ruolo) {
-        if(nodoSelezionato.getListaRuoli().contains(ruolo)){
+    public void aggiungiRuolo(String ruolo) {
+        if(unitaSelezionata.getListaRuoli().contains(ruolo)){
             // TODO messaggio di errore: il ruolo esiste già
             return;
         }
-        nodoSelezionato.aggiungiRuolo(ruolo);
+        unitaSelezionata.aggiungiRuolo(ruolo);
+        finestra.setModificaEffettuata(true);
     }
 
     public void salva() {
@@ -97,6 +115,7 @@ public class Controller {
                 e.printStackTrace();
             }
         }
+        finestra.setModificaEffettuata(false);
     }
 
     public void apri() {
@@ -119,12 +138,11 @@ public class Controller {
                 e.printStackTrace();
             }
         }
+        finestra.setModificaEffettuata(false);
     }
 
-    // ------ INIT ------
-
-    public void createAndShowGUI() {
-        alberoAziendale = new AlberoAziendale();
-        new FinestraOrganigramma(this, alberoAziendale).setVisible(true);
+    public void setNodoSelezionato(DefaultMutableTreeNode nodoSelezionato) {
+        this.nodoSelezionato = nodoSelezionato;
+        unitaSelezionata = (UnitaOrganizzativa) nodoSelezionato.getUserObject();
     }
 }

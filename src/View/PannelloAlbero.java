@@ -1,6 +1,7 @@
 package View;
 
 import Controller.Controller;
+import Model.UnitaOrganizzativa;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,14 +56,15 @@ public class PannelloAlbero extends JPanel implements ActionListener {
 
         if (AGGIUNGI.equals(command)) {
             String nomeNodo = JOptionPane.showInputDialog("Nome del nuovo nodo: ");
-            if (nomeNodo != null && !nomeNodo.equals(""))
-                controller.aggiungiNodo(alberoView.getNodoSelezionato(), nomeNodo);
+            if (nomeNodo != null && !nomeNodo.equals("")) {
+                controller.aggiungiNodo(nomeNodo);
+            }
 
         } else if (RIMUOVI.equals(command)) {
-            controller.rimuoviNodo(alberoView.getNodoSelezionato());
+            controller.rimuoviNodo();
 
         } else if (RUOLI.equals(command)) {
-            new DialogoRuoli(controller, alberoView.getNodoSelezionato()).setVisible(true);
+            new DialogoRuoli(controller, (UnitaOrganizzativa) alberoView.getNodoSelezionato().getUserObject()).setVisible(true);
         }
     }
 }

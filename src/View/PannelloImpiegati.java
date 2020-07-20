@@ -25,7 +25,7 @@ public class PannelloImpiegati extends JPanel implements ActionListener, Observe
     private Impiegato impiegatoSelezionato;
     private JButton removeButton;
     private JButton infoButton;
-    private UnitaOrganizzativa nodoSelezionato;
+    private UnitaOrganizzativa unitaSelezionata;
     private Controller controller;
 
     public PannelloImpiegati(Controller controller) {
@@ -96,15 +96,15 @@ public class PannelloImpiegati extends JPanel implements ActionListener, Observe
         add(panel, BorderLayout.SOUTH);
     }
 
-    public void aggiornaNodoSelezionato(UnitaOrganizzativa nodoSelezionato) {
-        this.nodoSelezionato = nodoSelezionato;
+    public void aggiornaNodoSelezionato(UnitaOrganizzativa unitaSelezionata) {
+        this.unitaSelezionata = unitaSelezionata;
         aggiorna();
     }
 
     @Override
     public void aggiorna() {
-        LinkedList<Impiegato> impiegati = nodoSelezionato.getListaImpiegati();
-        String nomeNodo = (String) nodoSelezionato.getUserObject();
+        LinkedList<Impiegato> impiegati = unitaSelezionata.getListaImpiegati();
+        String nomeNodo = unitaSelezionata.toString();
 
         titolo.setText("Impiegati del nodo " + nomeNodo);
 
@@ -129,13 +129,13 @@ public class PannelloImpiegati extends JPanel implements ActionListener, Observe
         String command = e.getActionCommand();
 
         if (ADD_COMMAND.equals(command)) {
-            if(nodoSelezionato.getListaRuoli().isEmpty()){
+            if(unitaSelezionata.getListaRuoli().isEmpty()){
                 //TODO messeggio di errore: non esiste alcun ruolo in questa unità
                 return;
             }
-            new AggiungiImpiegato(controller, nodoSelezionato).setVisible(true);
+            new AggiungiImpiegato(controller, unitaSelezionata).setVisible(true);
         } else if (REMOVE_COMMAND.equals(command)) {
-            controller.rimuoviImpiegato(nodoSelezionato, impiegatoSelezionato);
+            controller.rimuoviImpiegato(impiegatoSelezionato);
         } else if (INFO_COMMAND.equals(command)){
             new InfoImpiegato(impiegatoSelezionato).setVisible(true);
         }

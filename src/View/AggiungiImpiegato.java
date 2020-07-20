@@ -12,9 +12,9 @@ import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
 public class AggiungiImpiegato extends JDialog {
-    public AggiungiImpiegato(Controller controller, UnitaOrganizzativa nodoSelezionato){
-        String nomeNodo = (String) nodoSelezionato.getUserObject();
-        LinkedList<String> listaRuoli = nodoSelezionato.getListaRuoli();
+    public AggiungiImpiegato(Controller controller, UnitaOrganizzativa unitaSelezionata){
+        String nomeNodo = unitaSelezionata.toString();
+        LinkedList<String> listaRuoli = unitaSelezionata.getListaRuoli();
 
         JButton aggiungiButton = new JButton("Aggiugni impiegato");
         aggiungiButton.setEnabled(false);
@@ -47,7 +47,7 @@ public class AggiungiImpiegato extends JDialog {
         aggiungiButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.aggiungiImpiegato(nodoSelezionato, inputNome.getText(), (String) inputRuolo.getSelectedItem());
+                controller.aggiungiImpiegato(inputNome.getText(), (String) inputRuolo.getSelectedItem());
                 dispose();
             }
         });

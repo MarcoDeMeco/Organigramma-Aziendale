@@ -10,8 +10,6 @@ import java.awt.event.ActionListener;
 
 public class Main {
     public static void main(String[] args) {
-        // TODO thread safe
         Controller controller = new Controller();
-        controller.createAndShowGUI();
     }
 }

@@ -1,34 +1,33 @@
 package Model;
 
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
+import javax.swing.tree.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class AziendaTreeModel extends DefaultTreeModel {
     private HashMap<String, Impiegato> impiegatiByName;
     private LinkedList<String> listaNodi;
-    private UnitaOrganizzativa rootNode;
+    private DefaultMutableTreeNode rootNode;
 
     public AziendaTreeModel() {
-        super(new UnitaOrganizzativa("Azienda"));
+        super(new DefaultMutableTreeNode(new UnitaOrganizzativa("Azienda")));
 
         impiegatiByName = new HashMap<>();
         listaNodi = new LinkedList<>();
 
-        rootNode = (UnitaOrganizzativa) getRoot();
-        rootNode.aggiungiRuolo("CEO");
-        rootNode.aggiungiRuolo("CTO");
-        rootNode.aggiungiRuolo("Direttore");
-    }
+        rootNode = (DefaultMutableTreeNode) getRoot();
 
-    public HashMap<String, Impiegato> getImpiegatiByName() {
-        return impiegatiByName;
+        UnitaOrganizzativa azienda = (UnitaOrganizzativa) rootNode.getUserObject();
+        azienda.aggiungiRuolo("CEO");
+        azienda.aggiungiRuolo("CTO");
+        azienda.aggiungiRuolo("Direttore");
     }
 
     public LinkedList<String> getListaNodi() {
         return listaNodi;
+    }
+
+    public HashMap<String, Impiegato> getImpiegatiByName() {
+        return impiegatiByName;
     }
 }
