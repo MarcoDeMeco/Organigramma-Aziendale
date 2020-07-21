@@ -21,7 +21,11 @@ public class Controller {
 
     public Controller(){
         alberoAziendale = new AlberoAziendale();
-        finestra = new FinestraOrganigramma(this, alberoAziendale);
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                finestra = new FinestraOrganigramma(Controller.this, alberoAziendale);
+            }
+        });
     }
 
     public DefaultMutableTreeNode aggiungiNodo(String nomeNodo) {

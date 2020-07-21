@@ -106,7 +106,7 @@ public class PannelloImpiegati extends JPanel implements ActionListener, Observe
         LinkedList<Impiegato> impiegati = unitaSelezionata.getListaImpiegati();
         String nomeNodo = unitaSelezionata.toString();
 
-        titolo.setText("Impiegati del nodo " + nomeNodo);
+        titolo.setText("Impiegati in " + nomeNodo);
 
         removeButton.setEnabled(false);
         infoButton.setEnabled(false);

@@ -29,12 +29,12 @@ public class DialogoRuoli extends JDialog implements Observer {
 
             @Override
             public void windowClosing(WindowEvent e) {
-
+                unitaSelezionata.detach(DialogoRuoli.this);
             }
 
             @Override
             public void windowClosed(WindowEvent e) {
-                unitaSelezionata.detach(DialogoRuoli.this);
+
             }
 
             @Override
@@ -58,7 +58,7 @@ public class DialogoRuoli extends JDialog implements Observer {
             }
         });
 
-        JTextField info = new JTextField("Lista ruoli del nodo: "+unitaSelezionata);
+        JTextField info = new JTextField("Lista ruoli in: "+unitaSelezionata);
         info.setEditable(false);
         info.setHorizontalAlignment(0);
 
@@ -155,7 +155,7 @@ public class DialogoRuoli extends JDialog implements Observer {
         pannello.add(container, BorderLayout.SOUTH);
 
         add(pannello);
-        setTitle("Ruoli del nodo "+unitaSelezionata);
+        setTitle("Ruoli nell'unità "+unitaSelezionata);
         setSize(300,300);
         setLocationRelativeTo(null);
         setModal(true);
