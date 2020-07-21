@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class AziendaTreeModel extends DefaultTreeModel {
+    // <nome impiegato, impiegato>
     private HashMap<String, Impiegato> impiegatiByName;
+
     private LinkedList<String> listaNodi;
     private DefaultMutableTreeNode rootNode;
 
