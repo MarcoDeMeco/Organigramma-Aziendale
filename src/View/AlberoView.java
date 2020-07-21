@@ -44,7 +44,6 @@ public class AlberoView extends JTree implements TreeSelectionListener, Observer
         controller.setNodoSelezionato(nodoSelezionato);
         UnitaOrganizzativa unitaSelezionata = (UnitaOrganizzativa) nodoSelezionato.getUserObject();
         unitaSelezionata.attach(pannelloImpiegati);
-        // TODO controlla
         pannelloImpiegati.aggiornaNodoSelezionato(unitaSelezionata);
     }
 
