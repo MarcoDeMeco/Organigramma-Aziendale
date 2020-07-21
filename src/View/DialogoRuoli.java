@@ -159,6 +159,7 @@ public class DialogoRuoli extends JDialog implements Observer {
         setSize(300,300);
         setLocationRelativeTo(null);
         setModal(true);
+        setVisible(true);
     }
 
     @Override

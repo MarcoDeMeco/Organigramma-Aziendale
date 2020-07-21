@@ -123,21 +123,20 @@ public class PannelloImpiegati extends JPanel implements ActionListener, Observe
         }
     }
 
-    // TODO controlla sta cosa che certi listener sono implementati nella classe e certi no
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
         if (ADD_COMMAND.equals(command)) {
             if(unitaSelezionata.getListaRuoli().isEmpty()){
-                //TODO messeggio di errore: non esiste alcun ruolo in questa unità
+                new Errore("Non esiste alcun ruolo in questa unità.\nAssicurati che ci sia almeno un ruolo disponibile nell'unità selezionata");
                 return;
             }
-            new AggiungiImpiegato(controller, unitaSelezionata).setVisible(true);
+            new AggiungiImpiegato(controller, unitaSelezionata);
         } else if (REMOVE_COMMAND.equals(command)) {
             controller.rimuoviImpiegato(impiegatoSelezionato);
         } else if (INFO_COMMAND.equals(command)){
-            new InfoImpiegato(impiegatoSelezionato).setVisible(true);
+            new InfoImpiegato(impiegatoSelezionato);
         }
     }
 

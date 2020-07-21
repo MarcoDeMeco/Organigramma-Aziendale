@@ -22,14 +22,11 @@ public class Controller {
     public Controller(){
         alberoAziendale = new AlberoAziendale();
         finestra = new FinestraOrganigramma(this, alberoAziendale);
-        // TODO controllare i setVisible
-        finestra.setVisible(true);
     }
 
     public DefaultMutableTreeNode aggiungiNodo(String nomeNodo) {
         if (alberoAziendale.getListaNodi().contains(nomeNodo)) {
-            // TODO
-            JOptionPane.showMessageDialog(null, "Il nodo " + nomeNodo + " esiste già");
+            new Errore("L'unità " + nomeNodo + " esiste già");
             return null;
         }
         finestra.setModificaEffettuata(true);
@@ -61,7 +58,7 @@ public class Controller {
         }
 
         if(unitaSelezionata.getListaImpiegati().contains(nuovoImpiegato)){
-            // TODO messaggio di errore: L'impiegato è già assunto
+            new Errore("L'impiegato è già assunto all'interno di questa unità");
             return;
         }
 
@@ -80,7 +77,7 @@ public class Controller {
     public void rimuoviRuolo(String ruolo) {
         for(Impiegato i : unitaSelezionata.getListaImpiegati()){
             if(i.getRuolo(unitaSelezionata.toString()).equals(ruolo)){
-                // TODO messaggio di errore: c'è almeno un impiegato che ha questo ruolo
+                new Errore("C'è almeno un impiegato che ha questo ruolo.\nAssicurati di aver rimosso gli impiegati che hanno il ruolo da eliminare");
                 return;
             }
         }
@@ -90,7 +87,7 @@ public class Controller {
 
     public void aggiungiRuolo(String ruolo) {
         if(unitaSelezionata.getListaRuoli().contains(ruolo)){
-            // TODO messaggio di errore: il ruolo esiste già
+            new Errore("Il ruolo "+ruolo+" è già presente in questa unità");
             return;
         }
         unitaSelezionata.aggiungiRuolo(ruolo);
@@ -111,7 +108,7 @@ public class Controller {
                 oos.writeObject(alberoAziendale.getAziendaTreeModel());
 
             } catch (Exception e){
-                JOptionPane.showMessageDialog(null, "Errore durante la scrittura del file");
+                new Errore("Errore durante la scrittura del file");
                 e.printStackTrace();
             }
         }
@@ -134,7 +131,7 @@ public class Controller {
                 alberoAziendale.setAziendaTreeModel(model);
 
             } catch (Exception e){
-                JOptionPane.showMessageDialog(null, "Errore");
+                new Errore("Errore");
                 e.printStackTrace();
             }
         }

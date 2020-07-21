@@ -86,7 +86,30 @@ public class FinestraOrganigramma extends JFrame {
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("holaaa");
+                String s = "Per ottenere informazioni sugli impiegati di una determinata unità basta cliccare sul\n" +
+                        "nodo in questione nel pannello a sinistra. Qualora si desidera aggiungere una nuova\n" +
+                        "unità, bisogna selezionare un'unità \"padre\" e poi premere il tasto \"aggiungi\" nel\n" +
+                        "pannello a sinistra, in questo modo verrà creata una nuova unità nel livello gerarchico\n" +
+                        "sottostante.\n" +
+                        "All'aggiunta di una nuova unità, questa non contiene ruoli, per cui bisognerà aggiungerli\n" +
+                        "manualmente premendo il tasto \"gestisci ruoli\", altrimenti sarà impossibile aggiungere\n" +
+                        "nuovi impiegati.\n" +
+                        "Per vedere le informazioni su un impiegato o rimuoverlo, bisogna selezionare la riga\n" +
+                        "corrispondente nel pannello impiegati sulla destra.\n" +
+                        "Si assume che non possano esistere due impiegati diversi con lo stesso nome e cognome.";
+                JOptionPane.showMessageDialog(null, s);
+            }
+        });
+        menu.add(item);
+
+        item = new JMenuItem("About");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s = "Realizzato da\n" +
+                        "Marco De Meco\n" +
+                        "Matricola: 189669";
+                JOptionPane.showMessageDialog(null, s);
             }
         });
         menu.add(item);
@@ -107,6 +130,7 @@ public class FinestraOrganigramma extends JFrame {
         setLocationRelativeTo(null);
         setJMenuBar(menuBar);
         pack();
+        setVisible(true);
     }
 
     public void setModificaEffettuata(boolean modificaEffettuata) {

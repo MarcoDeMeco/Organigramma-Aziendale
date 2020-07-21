@@ -68,7 +68,7 @@ public class PannelloAlbero extends JPanel implements ActionListener {
             controller.rimuoviNodo();
 
         } else if (RUOLI.equals(command)) {
-            new DialogoRuoli(controller, (UnitaOrganizzativa) alberoView.getNodoSelezionato().getUserObject()).setVisible(true);
+            new DialogoRuoli(controller, (UnitaOrganizzativa) alberoView.getNodoSelezionato().getUserObject());
         }
     }
 }

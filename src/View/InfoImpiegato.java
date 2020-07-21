@@ -42,6 +42,7 @@ public class InfoImpiegato extends JDialog {
         setSize(300,300);
         setLocationRelativeTo(null);
         setModal(true);
+        setVisible(true);
     }
 
     private class MyTableModel extends DefaultTableModel {

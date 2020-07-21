@@ -52,7 +52,7 @@ public class AggiungiImpiegato extends JDialog {
             }
         });
 
-        JTextField scegliNome = new JTextField("Nome: ");
+        JTextField scegliNome = new JTextField("Nome e cognome: ");
         scegliNome.setEditable(false);
         JTextField scegliRuolo = new JTextField("Ruolo: ");
         scegliRuolo.setEditable(false);
@@ -72,5 +72,6 @@ public class AggiungiImpiegato extends JDialog {
         setSize(300, 120);
         setLocationRelativeTo(null);
         setModal(true);
+        setVisible(true);
     }
 }
