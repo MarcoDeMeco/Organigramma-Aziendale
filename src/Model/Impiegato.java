@@ -1,7 +1,5 @@
 package Model;
 
-import View.Observer;
-
 import java.io.Serializable;
 import java.util.HashMap;
 
