@@ -113,7 +113,6 @@ public class Controller {
 
             } catch (Exception e){
                 new Errore("Errore durante la scrittura del file");
-                e.printStackTrace();
             }
         }
         finestra.setModificaEffettuata(false);
@@ -135,8 +134,7 @@ public class Controller {
                 alberoAziendale.setAziendaTreeModel(model);
 
             } catch (Exception e){
-                new Errore("Errore");
-                e.printStackTrace();
+                new Errore("Il file selezionato non è valido");
             }
         }
         finestra.setModificaEffettuata(false);
