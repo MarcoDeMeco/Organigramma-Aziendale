@@ -106,7 +106,7 @@ public class FinestraOrganigramma extends JFrame {
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String s = "Realizzato da\n" +
+                String s = "Realizzato da:\n" +
                         "Marco De Meco\n" +
                         "Matricola: 189669";
                 JOptionPane.showMessageDialog(null, s);
