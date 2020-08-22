@@ -19,7 +19,7 @@ public class Controller {
     private DefaultMutableTreeNode nodoSelezionato;
     private UnitaOrganizzativa unitaSelezionata;
 
-    public Controller(){
+    public Controller() {
         alberoAziendale = new AlberoAziendale();
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -28,6 +28,13 @@ public class Controller {
         });
     }
 
+    /**
+     * Aggiunge un nodo all'albero. Il controller si assicura che non esista già il nodo che si vuole aggiungere,
+     * altrimenti mostra un errore
+     *
+     * @param nomeNodo nome del nodo da aggiungere
+     * @return nodo creato
+     */
     public DefaultMutableTreeNode aggiungiNodo(String nomeNodo) {
         if (alberoAziendale.getListaNodi().contains(nomeNodo)) {
             new Errore("L'unità " + nomeNodo + " esiste già");
@@ -37,6 +44,10 @@ public class Controller {
         return alberoAziendale.aggiungiNodo(nodoSelezionato, nomeNodo);
     }
 
+    /**
+     * Elimina il nodo selezionato. Se il nodo selezionato è il nodo radice, viene emesso un beep che segnala che il
+     * nodo non può essere eliminato
+     */
     public void rimuoviNodo() {
         TreeNode parent = nodoSelezionato.getParent();
 
@@ -45,23 +56,31 @@ public class Controller {
             return;
         }
 
-        for(Impiegato i : unitaSelezionata.getListaImpiegati()){
+        for (Impiegato i : unitaSelezionata.getListaImpiegati()) {
             i.rimuoviImpiego(unitaSelezionata.toString());
-            if(i.isDisoccupato())
-                alberoAziendale.getImpiegatiByName().remove(i);
+            if (i.isDisoccupato())
+                alberoAziendale.getImpiegatiByName().remove(i.getNome());
         }
 
         alberoAziendale.rimuoviNodo(nodoSelezionato);
         finestra.setModificaEffettuata(true);
     }
 
+    /**
+     * Ogni impiegato è identificato dalla stringa nomeImpiegato che contiene nome e cognome. Al momento dell'aggiunta
+     * di un ruolo, se l'impiegato è già stato creato allora aggiunge il ruolo specificato nella lista dei ruoli
+     * occupati, altrimenti crea un nuovo impiegato con il solo ruolo indicato.
+     *
+     * @param nomeImpiegato nome dell'impiegato
+     * @param ruolo         ruolo occupato
+     */
     public void aggiungiImpiegato(String nomeImpiegato, String ruolo) {
         Impiegato nuovoImpiegato = new Impiegato(nomeImpiegato);
-        if(alberoAziendale.getImpiegatiByName().containsKey(nomeImpiegato)){
+        if (alberoAziendale.getImpiegatiByName().containsKey(nomeImpiegato)) {
             nuovoImpiegato = alberoAziendale.getImpiegatiByName().get(nomeImpiegato);
         }
 
-        if(unitaSelezionata.getListaImpiegati().contains(nuovoImpiegato)){
+        if (unitaSelezionata.getListaImpiegati().contains(nuovoImpiegato)) {
             new Errore("L'impiegato è già assunto all'interno di questa unità");
             return;
         }
@@ -72,16 +91,32 @@ public class Controller {
         finestra.setModificaEffettuata(true);
     }
 
+    /**
+     * Rimuove il ruolo dell'impiegato nel nodo selezionato. Se l'impiegato non copre altri ruoli nell'azienda, viene
+     * eliminato
+     *
+     * @param impiegato impiegato da rimuovere
+     */
     public void rimuoviImpiegato(Impiegato impiegato) {
         unitaSelezionata.rimuoviImpiegato(impiegato);
         impiegato.rimuoviImpiego(unitaSelezionata.toString());
+        if (impiegato.isDisoccupato())
+            alberoAziendale.getImpiegatiByName().remove(impiegato.getNome());
         finestra.setModificaEffettuata(true);
     }
 
+
+    /**
+     * Rimuove un ruolo tra quelli disponibili all'interno del nodo selezionato, se è presente almeno un impiegato
+     * che occupa quel ruolo allora viene mostrato un messaggio di errore
+     *
+     * @param ruolo ruolo da eliminare
+     */
     public void rimuoviRuolo(String ruolo) {
-        for(Impiegato i : unitaSelezionata.getListaImpiegati()){
-            if(i.getRuolo(unitaSelezionata.toString()).equals(ruolo)){
-                new Errore("C'è almeno un impiegato che ha questo ruolo.\nAssicurati di aver rimosso gli impiegati che hanno il ruolo da eliminare");
+        for (Impiegato i : unitaSelezionata.getListaImpiegati()) {
+            if (i.getRuolo(unitaSelezionata.toString()).equals(ruolo)) {
+                new Errore("C'è almeno un impiegato che ha questo ruolo.\nAssicurati di aver rimosso gli" +
+                        " impiegati che hanno il ruolo da eliminare");
                 return;
             }
         }
@@ -89,9 +124,15 @@ public class Controller {
         finestra.setModificaEffettuata(true);
     }
 
+    /**
+     * Aggiunge un ruolo alla lista dei ruoli disponibili all'interno del nodo selezionato. I ruoli sono identificati
+     * dal nome, se il ruolo specificato esiste già, viene mostrato un messaggio di errore
+     *
+     * @param ruolo nome del ruolo da aggiunger
+     */
     public void aggiungiRuolo(String ruolo) {
-        if(unitaSelezionata.getListaRuoli().contains(ruolo)){
-            new Errore("Il ruolo "+ruolo+" è già presente in questa unità");
+        if (unitaSelezionata.getListaRuoli().contains(ruolo)) {
+            new Errore("Il ruolo " + ruolo + " è già presente in questa unità");
             return;
         }
         unitaSelezionata.aggiungiRuolo(ruolo);
@@ -111,7 +152,7 @@ public class Controller {
                 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileToSave.getAbsolutePath()));
                 oos.writeObject(alberoAziendale.getAziendaTreeModel());
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 new Errore("Errore durante la scrittura del file");
             }
         }
@@ -133,7 +174,7 @@ public class Controller {
                 AziendaTreeModel model = (AziendaTreeModel) ois.readObject();
                 alberoAziendale.setAziendaTreeModel(model);
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 new Errore("Il file selezionato non è valido");
             }
         }
